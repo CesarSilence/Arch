@@ -1,0 +1,80 @@
+Instalacion ArchLinux:
+
+root@archiso~ #
+
+# loadkeys la-latin1
+# cfdisk
+
+Crear Particiones:
+
+/boot --> 150MB
+/root --> 10-15GB
+/home --> Mayor Tamaño
+/swap --> 1-3 GB
+
+sda1 = boot, sda2 = /, sda3 = home y sda4 = swap
+
+Formateo Particiones:
+
+# mkfs -t ext2 /dev/sda1
+# mkfs -t ext4 /dev/sda2
+# mkfs -t ext4 /dev/sda3
+# mkswap /dev/sda4
+# swapon /dev/sda4
+
+Organización de Particiones:
+
+# mount /dev/sda2 /mnt
+
+# mkdir /mnt/boot
+# mkdir /mnt/home
+
+# mount /dev/sda1 /mnt/boot
+# mount /dev/sda3 /mnt/home
+
+Conexiones a internet:
+
+Inalambrica: # wifi-menu
+
+Comprobamos conexión ya que el demonio dhcpcd se inicia de manera automatica:
+
+ping -c 3 www.google.cl
+
+Instalacion del Sistema:
+
+# pacstrap /mnt base base-devel
+# pacstrap /mnt grub-bios
+# pacstrap /mnt networkmanager
+# pacstrap /mnt xf86-input-synaptics ---> Touchpad
+
+Configuracion Principal:
+
+# genfstab -U -p /mnt >> /mnt/etc/fstab
+# arch-chroot /mnt --> Entramos al chroot
+# nano /etc/hostname ---> Nombre de equipo
+# ln -s /usr/share/zoneinfo/America/Santiago /etc/localtime
+# nano /etc/locale.conf ---> Localizacion
+LANG=es_CL.UTF-8
+# nano /etc/locale.gen ---> Sacar el # a nuestra localizacion es_CL.UTF-8
+# locale-gen
+# nano /etc/vconsole.conf --> Distribucion de Teclado.
+KEYMAP=la-latin1
+
+# grub-install /dev/sda
+# grub-mkconfig -o /boot/grub/grub.cfg --> creamos el archivo grub.cfg
+# mkinitcpio -p linux --> generamos ramdisk
+#passwd -> clave root
+exit
+# umount /mnt/{boot,home,}  -> desmontamos particiones
+reboot
+
+# systemctl start NetworkManager.service
+# systemctl enable NetworkManager.service
+# useradd -m -g users -G audio,lp,optical,storage,video,wheel,games,power,scanner -s /bin/bash cesar
+# passwd cesar
+# nano /etc/sudoers --> activar grupo Wheel, eliminamos el # al inicio de la linea: %wheel ALL=(ALL) ALL:
+reboot
+$ sudo nmcli dev wifi connect "SSID" password "contraseña" -> Conectar a Wifi
+$ sudo pacman -Syu -> Actualizamos Sistema.
+
+
