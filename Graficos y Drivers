@@ -1,0 +1,10 @@
+$ sudo pacman -S xorg-server xorg-xinit xorg-utils xorg-server-utils
+$ sudo pacman -S mesa mesa-demos
+$ sudo pacman -S xf86-video-intel
+
+$ sudo pacman -Ss xf86-video --> ver lista de drivers
+
+$ sudo pacman -S xf86-video-vesa -- > en caso ed no encontrar usar vesa es el mas general.
+$ sudo pacman -S xorg-twm xorg-xclock xterm
+$ startx
+
