@@ -1,0 +1,59 @@
+Step Sixteen: Installing X and Guest Additions
+
+Arch Linux should be working wonderfully at this point.  But chances are, you don’t want to live your entire computing life on the command line.  You’d like a slick GUI desktop environment, with beautiful icons, where you can your favorite programs and—oh, I don’t know—use a mouse.  You’d probably also like it if you could use your new Arch Linux installation in full screen mode, such that it was more like working with your native OS.  All this is possible, of course, and we’ll get to it now.
+
+To begin with, we need to install a software suite called “X”, which is a “window system”—software that supports draggable, droppable windows and the like—that serves as the underpinning of most of Linux’s GUI desktop environments. We’ll start by installing the basic X packages.  Once again, we can use ‘pacman -S’ to install all the software we’re looking to add:
+
+# sudo pacman -S xorg-server xorg-xinit xorg-server-utils
+
+Provide your password if asked, and follow the prompts pacman provides to install the software.
+
+Next, since we’d like to be able to use a really slick GUI desktop, we also need to install another piece of software called “mesa,” which is required to support the 3D graphics common to many newer desktop environments:
+
+# sudo pacman -S mesa
+
+Once again, provide a password if asked, and follow the prompts to complete the installation.
+
+Normally at this stage, we’d install the hardware drivers for our computer’s graphics card, but since our PC is virtual we’re instead going to install VirtualBox’s “Guest Additions”—a collection of software packages that will enable our virtual machine to take advantage of full screen graphics and hardware acceleration.  The Guest Additions also more generally enable our Arch Linux guest OS to integrate more fully with the native host OS running VirtualBox.
+
+To install guest additions, run the following command:
+
+# sudo pacman -S virtualbox-guest-utils
+
+At this point you’re likely getting used to working with both sudo and pacman, so I’ll stop with the spiel about entering your password if asked and following the prompts.
+
+Once Guest Additions are installed, we need to make sure that the various components of this software are loaded automatically each time the system boots. To do this, we’ll use nano to create a new configuration file called ‘virtualbox.conf’.  This file will go in the ‘/etc/modules-load.d’ directory, which contains files that need to be loaded when Arch boots up.  Since adding a file to this directory requires administrative permissions, we’ll need to precede our command with ‘sudo’ once again:
+
+# sudo nano /etc/modules-load.d/virtualbox.conf
+
+When nano brings up the blank file, add these three lines to it:
+
+vboxguest
+vboxsf
+vboxvideo
+
+As usual, when you’re finished entering text in nano, type Control-X to exit to the command line, and answer ‘y’ for yes when you’re asked whether you want to save your work, and then hit ‘Return’ to accept the filename.
+
+At this point, reboot your machine for the Guest Additions to take effect.
+
+# sudo reboot
+
+Upon rebooting, your system should automatically connect to the internet, and Guest Additions should load up as part of the boot process.
+
+By installing Guest Additions, we’re working toward better integration between our host and guest OSes.  One example is that we can sync our Arch Linux install’s clock with that of the host system by entering the following command. This will enable synching on the next boot:
+
+# sudo systemctl enable vboxservice.service
+
+But enough with the clock.  At this point, we want to see if X is working, since we need it to be functional before we can install and use a GUI desktop.
+
+To this end, we’ll install a few software packages that will help us test X:
+
+# sudo pacman -S xorg-twm xorg-xclock xterm
+
+After these software packages have been installed, we can test that Xorg is installed correctly by running the command:
+
+# startx
+
+This will launch a test environment that relies on X.  At this point, a few things should happen.  Your guest OS screen should resize, your mouse should work, and you should see some draggable windows.  This all means that both Guest Additions and X are working properly.
+
+Note that the each of the draggable windows in the test environment should include a command prompt.  At one of these prompts, type ‘exit’ to quit out of the test environment and back to the ordinary command line interface.
